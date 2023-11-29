@@ -1,0 +1,48 @@
+body {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+}
+
+.videos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 31px;
+}
+
+article {
+  margin: 0;
+  padding: 0;
+  width: 356px;
+}
+
+article .video {
+  display: flex;
+  height: 267px;
+  align-items: center;
+}
+
+article .video iframe {
+  width: 356px;
+  max-height: 267px;
+  background-color: black !important;
+}
+
+article .description {
+  padding: 10px 20px;
+}
+
+article .description a {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+#video-grid {
+  width: 100%;
+  padding-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
