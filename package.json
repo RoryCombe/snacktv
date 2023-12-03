@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "dev": "vite src --port 3000",
-    "build": "vite build"
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "pnpm build && npx -y serve dist -l 3001"
   },
   "keywords": [],
   "author": "",
