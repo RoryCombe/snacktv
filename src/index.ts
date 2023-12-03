@@ -1,40 +1,45 @@
-const htmlDecode = (input) => {
+const htmlDecode = (input: string) => {
   var doc = new DOMParser().parseFromString(input, 'text/html');
   return doc.documentElement.textContent || '';
 };
 
-const chunk = (input, size) => {
+const chunk = (input: Array<any>, size: number) => {
   return input.reduce((arr, item, idx) => {
     return idx % size === 0 ? [...arr, [item]] : [...arr.slice(0, -1), [...arr.slice(-1)[0], item]];
   }, []);
 };
 
-const map = (arr, fn) => arr.map(fn).join('');
+const map = (arr: Array<any>, fn: (value: any, index: number, array: Array<any>) => unknown) => arr.map(fn).join('');
 
 class SnackTV extends HTMLElement {
-  cache = new Map();
+  cache = new Map<string, { videos: Array<STV.Video>; flair: Set<string> }>();
 
-  constructor(props) {
-    super(props);
+  videos: Array<STV.Video> = [];
+  flair: Set<string> = new Set();
+  watchElemId: string = '';
+  watchElem: string = '';
+
+  constructor() {
+    super();
     this.initialise();
     this.preWarmCache();
   }
 
   get category() {
     const params = new URLSearchParams(location.search);
-    return params.get('category') ?? this.getAttribute('category') ?? 'top';
+    return (params.get('category') ?? this.getAttribute('category') ?? 'top') as STV.Category;
   }
 
-  set category(value) {
+  set category(value: STV.Category) {
     this.setAttribute('category', value);
   }
 
   get timeframe() {
     const params = new URLSearchParams(location.search);
-    return params.get('timeframe') ?? this.getAttribute('timeframe') ?? 'all';
+    return (params.get('timeframe') ?? this.getAttribute('timeframe') ?? 'all') as STV.Timeframe;
   }
 
-  set timeframe(value) {
+  set timeframe(value: STV.Timeframe) {
     this.setAttribute('timeframe', value);
   }
 
@@ -42,12 +47,12 @@ class SnackTV extends HTMLElement {
     return this.generateCacheKey(this.category, this.timeframe);
   }
 
-  generateCacheKey(category, timeframe) {
+  generateCacheKey(category: STV.Category, timeframe?: STV.Timeframe) {
     return `${category}${category === 'top' ? `-${timeframe}` : ''}`;
   }
 
-  generateFlair(videos) {
-    const flair = new Set();
+  generateFlair(videos: Array<STV.Video>) {
+    const flair = new Set<string>();
     videos.forEach((v) => {
       if (v.data.link_flair_text) {
         flair.add(v.data.link_flair_text);
@@ -71,14 +76,14 @@ class SnackTV extends HTMLElement {
   }
 
   setActiveLinks() {
-    this.querySelectorAll('.category-link').forEach((l) => {
+    this.querySelectorAll<HTMLAnchorElement>('.category-link').forEach((l) => {
       if (l.dataset.category === this.category) {
         l.classList.add('active');
       } else {
         l.classList.remove('active');
       }
     });
-    this.querySelectorAll('.timeframe-link').forEach((l) => {
+    this.querySelectorAll<HTMLAnchorElement>('.timeframe-link').forEach((l) => {
       if (this.category === 'top' && l.dataset.timeframe === this.timeframe) {
         l.classList.add('active');
       } else {
@@ -87,44 +92,44 @@ class SnackTV extends HTMLElement {
     });
   }
 
-  categoryLinkClicked(event) {
-    this.category = event.target.dataset.category;
+  categoryLinkClicked(event: Event) {
+    this.category = ((event.target as HTMLAnchorElement).dataset.category ?? '') as STV.Category;
     if (this.category !== 'top') {
       this.timeframe = '';
       this.initialise();
     }
   }
 
-  timeframeLinkClicked(event) {
+  timeframeLinkClicked(event: Event) {
     this.category = 'top';
-    this.timeframe = event.target.dataset.timeframe;
+    this.timeframe = ((event.target as HTMLAnchorElement).dataset.timeframe ?? '') as STV.Timeframe;
     this.initialise();
   }
 
-  videoLinkClicked(event) {
-    const { videoIndex } = event.target.dataset;
-    const { data } = this.videos[videoIndex];
+  videoLinkClicked(event: Event) {
+    const { videoIndex = '' } = (event.target as HTMLDivElement).dataset;
+    const { data } = this.videos[+videoIndex];
     const content = data.media_embed.content
       ? htmlDecode(data.media_embed.content)
       : `<video src="${data.url}"></video>`;
 
     if (this.watchElemId) {
-      this.querySelector(this.watchElemId).innerHTML = this.watchElem;
+      this.querySelector(this.watchElemId)!.innerHTML = this.watchElem;
     }
 
     const elemId = `#video_${videoIndex}`;
     const elem = this.querySelector(elemId);
 
     this.watchElemId = elemId;
-    this.watchElem = elem.innerHTML;
+    this.watchElem = elem?.innerHTML ?? '';
 
-    elem.innerHTML = content;
+    elem!.innerHTML = content;
   }
 
-  async fetchVideos(category, timeframe = '') {
-    const urlSearchParams = new URLSearchParams({ limit: 100, t: timeframe });
+  async fetchVideos(category: STV.Category, timeframe: STV.Timeframe = 'all') {
+    const urlSearchParams = new URLSearchParams({ limit: '100', t: timeframe });
     const res = await fetch(`https://www.reddit.com/r/mealtimevideos/${category}/.json?${urlSearchParams}`);
-    const json = await res.json();
+    const json = (await res.json()) as STV.Subreddit;
     return json.data.children.map((child, snackTvId) => ({ ...child, snackTvId }));
   }
 
@@ -142,7 +147,7 @@ class SnackTV extends HTMLElement {
     }
     console.log('Cache', this.cache);
 
-    document.startViewTransition(() => {
+    (document as any).startViewTransition(() => {
       this.render();
       this.listen();
       this.setActiveLinks();
@@ -150,23 +155,25 @@ class SnackTV extends HTMLElement {
   }
 
   async preWarmCache() {
-    [
-      ['top', 'hour'],
-      ['top', 'day'],
-      ['top', 'week'],
-      ['top', 'month'],
-      ['top', 'year'],
-      ['hot'],
-      ['new'],
-      ['rising'],
-    ].forEach(async ([category, timeframe]) => {
+    (
+      [
+        ['top', 'hour'],
+        ['top', 'day'],
+        ['top', 'week'],
+        ['top', 'month'],
+        ['top', 'year'],
+        ['hot'],
+        ['new'],
+        ['rising'],
+      ] as Array<[category: STV.Category, timeframe?: STV.Timeframe]>
+    ).forEach(async ([category, timeframe]) => {
       const videos = await this.fetchVideos(category, timeframe);
       const flair = this.generateFlair(videos);
       this.cache.set(this.generateCacheKey(category, timeframe), { videos, flair });
     });
   }
 
-  renderVideo(video) {
+  renderVideo(video: STV.Video) {
     if (video === null) return `<div></div>`;
     const {
       snackTvId,
@@ -189,7 +196,7 @@ class SnackTV extends HTMLElement {
     `;
   }
 
-  renderVideoRow(videos) {
+  renderVideoRow(videos: Array<STV.Video>) {
     const vids = videos.length === 4 ? videos : videos.concat(Array(4 - videos.length).fill(null));
     return `<div class="grid">${map(vids, this.renderVideo)}</div>`;
   }
