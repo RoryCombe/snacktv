@@ -23,8 +23,6 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm build
-        with:
-          cache: 'dist'
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
