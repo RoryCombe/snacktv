@@ -22,7 +22,7 @@ a.active {
 
 .brand span {
   display: none;
-  @media (min-width: 900px) {
+  @media (min-width: 768px) {
     display: inline;
   }
 }
@@ -32,7 +32,20 @@ a.active {
 }
 
 .grid {
-  padding-bottom: 50px;
+  grid-template-columns: 1fr;
+  @media (min-width: 568px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(auto-fit, minmax(0%, 1fr));
+  }
+}
+
+.grid div {
+  padding-bottom: 20px;
+  @media (min-width: 992px) {
+    padding-bottom: 50px;
+  }
 }
 
 .video {
