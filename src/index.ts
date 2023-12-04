@@ -147,11 +147,17 @@ class SnackTV extends HTMLElement {
     }
     console.log('Cache', this.cache);
 
-    (document as any).startViewTransition(() => {
+    if ((document as any).startViewTransition) {
+      (document as any).startViewTransition(() => {
+        this.render();
+        this.listen();
+        this.setActiveLinks();
+      });
+    } else {
       this.render();
       this.listen();
       this.setActiveLinks();
-    });
+    }
   }
 
   async preWarmCache() {
