@@ -11,11 +11,14 @@ const chunk = (input: Array<any>, size: number) => {
 
 const map = (arr: Array<any>, fn: (value: any, index: number, array: Array<any>) => unknown) => arr.map(fn).join('');
 
+const flairOrder = ['5-7 Minutes', '7-10 Minutes', '10-15 Minutes', '15-30 Minutes', '30 Minutes Plus', '20%'];
+
 class SnackTV extends HTMLElement {
   cache = new Map<string, { videos: Array<STV.Video>; flair: Set<string> }>();
 
   videos: Array<STV.Video> = [];
   flair: Set<string> = new Set();
+  selectedFlair: string = '';
   watchElemId: string = '';
   watchElem: string = '';
 
@@ -72,6 +75,12 @@ class SnackTV extends HTMLElement {
 
     this.querySelectorAll('.timeframe-link').forEach((l) => {
       l.addEventListener('click', (e) => this.timeframeLinkClicked(e));
+    });
+
+    this.querySelector('#flair')?.addEventListener('change', (e) => {
+      const selection = (e.target as HTMLSelectElement).selectedOptions[0].innerText;
+      this.selectedFlair = selection.includes('Please choose') ? '' : selection;
+      this.render();
     });
   }
 
@@ -145,19 +154,7 @@ class SnackTV extends HTMLElement {
       this.flair = this.generateFlair(this.videos);
       this.cache.set(this.cacheKey, { videos: this.videos, flair: this.flair });
     }
-    console.log('Cache', this.cache);
-
-    if ((document as any).startViewTransition) {
-      (document as any).startViewTransition(() => {
-        this.render();
-        this.listen();
-        this.setActiveLinks();
-      });
-    } else {
-      this.render();
-      this.listen();
-      this.setActiveLinks();
-    }
+    this.render();
   }
 
   async preWarmCache() {
@@ -179,6 +176,13 @@ class SnackTV extends HTMLElement {
     });
   }
 
+  flairFilter(video: STV.Video) {
+    if (this.selectedFlair) {
+      return video.data.link_flair_text === this.selectedFlair;
+    }
+    return true;
+  }
+
   renderVideo(video: STV.Video) {
     if (video === null) return `<div></div>`;
     const {
@@ -197,7 +201,6 @@ class SnackTV extends HTMLElement {
           <a class="title-link" data-video-index="${snackTvId}" title="${title}">${title}</a>
           <kbd>${link_flair_text}</kbd>
         </div>
-        <!-- ${JSON.stringify(video, null, 2)} -->
       </div>
     `;
   }
@@ -207,8 +210,8 @@ class SnackTV extends HTMLElement {
     return `<div class="grid">${map(vids, this.renderVideo)}</div>`;
   }
 
-  render() {
-    const videoChunks = chunk(this.videos, 4);
+  renderView() {
+    const videoChunks = chunk(this.videos.filter(this.flairFilter.bind(this)), 4);
     this.innerHTML = `
       <nav>
         <ul>
@@ -233,13 +236,13 @@ class SnackTV extends HTMLElement {
           <li><a href="#" class="category-link" data-category="rising">Rising</a></li>
         </ul>
         <ul>
-          <li><div>How much time have you got?</div></li>
+          <li><div>Filter by time</div></li>
           <li>
-            <select id="fruit" required>
-              <option value="" selected>Select a time frame...</option>
+            <select id="flair">
+              <option value=""${!this.selectedFlair ? ' selected' : ''}>Please choose...</option>
               ${Array.from(this.flair)
-                .sort()
-                .map((f) => `<option>${f}</option>`)
+                .sort((a, b) => flairOrder.indexOf(a) - flairOrder.indexOf(b))
+                .map((f) => `<option value="${f}"${this.selectedFlair === f ? ' selected' : ''}>${f}</option>`)
                 .join('')}
             </select>
           </li>
@@ -247,6 +250,18 @@ class SnackTV extends HTMLElement {
       </nav>
       ${map(videoChunks, this.renderVideoRow.bind(this))}
     `;
+    this.listen();
+    this.setActiveLinks();
+  }
+
+  render() {
+    if ((document as any).startViewTransition) {
+      (document as any).startViewTransition(() => {
+        this.renderView();
+      });
+    } else {
+      this.renderView();
+    }
   }
 }
 
