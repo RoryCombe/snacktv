@@ -216,7 +216,7 @@ class SnackTV extends HTMLElement {
       <nav>
         <ul>
           <li>
-            <h1 class="brand">📺 Snack TV</h1>
+            <h1 class="brand">📺<span> Snack TV</span></h1>
           </li>
           <li>
             <details role="list" dir="rtl">
@@ -236,10 +236,9 @@ class SnackTV extends HTMLElement {
           <li><a href="#" class="category-link" data-category="rising">Rising</a></li>
         </ul>
         <ul>
-          <li><div>Filter by time</div></li>
           <li>
             <select id="flair">
-              <option value=""${!this.selectedFlair ? ' selected' : ''}>Please choose...</option>
+              <option value=""${!this.selectedFlair ? ' selected' : ''}>Time</option>
               ${Array.from(this.flair)
                 .sort((a, b) => flairOrder.indexOf(a) - flairOrder.indexOf(b))
                 .map((f) => `<option value="${f}"${this.selectedFlair === f ? ' selected' : ''}>${f}</option>`)

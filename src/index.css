@@ -20,6 +20,13 @@ a.active {
   margin-right: 10px;
 }
 
+.brand span {
+  display: none;
+  @media (min-width: 900px) {
+    display: inline;
+  }
+}
+
 .header {
   display: flex;
 }
