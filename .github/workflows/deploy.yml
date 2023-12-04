@@ -1,33 +1,28 @@
 name: Build and Deploy
-
 on:
   push:
     branches:
       - main
-
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [21]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: '21'
+          node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Install Dependencies and Build
-        run: |
-          corepack prepare pnpm@latest --activate
-          pnpm install
-          pnpm build
-
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build
+        run: pnpm build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
