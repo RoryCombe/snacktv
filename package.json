@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && cp src/privacy.html dist",
+    "build": "vite build",
     "serve": "pnpm build && npx -y serve dist -l 3001"
   },
   "keywords": [],
