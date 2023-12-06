@@ -139,7 +139,9 @@ class SnackTV extends HTMLElement {
     const urlSearchParams = new URLSearchParams({ limit: '100', t: timeframe });
     const res = await fetch(`https://www.reddit.com/r/mealtimevideos/${category}/.json?${urlSearchParams}`);
     const json = (await res.json()) as STV.Subreddit;
-    return json.data.children.map((child, snackTvId) => ({ ...child, snackTvId }));
+    return json.data.children
+      .filter((child) => !!child.data.media)
+      .map((child, snackTvId) => ({ ...child, snackTvId }));
   }
 
   async initialise() {
