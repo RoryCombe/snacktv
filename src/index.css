@@ -11,6 +11,10 @@ img {
   max-height: 200px;
 }
 
+footer {
+  text-align: center;
+}
+
 [role='link'].active,
 a.active {
   --background-color: var(--primary-focus);
