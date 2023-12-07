@@ -12,7 +12,6 @@ class TimeSelect extends HTMLElement {
   }
 
   setFlair(flair: Set<string>) {
-    debugger;
     this.flair = flair;
     this.render();
   }

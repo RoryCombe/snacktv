@@ -50,22 +50,21 @@ class VideoRow extends HTMLElement {
     elem!.innerHTML = content;
   }
 
-  renderVideo(video: STV.Video) {
+  renderVideo(video: STV.Video, index: number) {
     if (video === null) return `<div></div>`;
     const {
-      snackTvId,
       data: { title, link_flair_text, secure_media },
     } = video;
     return `
       <div>
         <div 
-          id="video_${snackTvId}"
+          id="video_${index}"
           class="video"
-          data-video-index="${snackTvId}"
+          data-video-index="${index}"
           style="background-image: url(${secure_media?.oembed?.thumbnail_url ?? 'play.png'})"
         ></div>
         <div>
-          <a class="title-link" data-video-index="${snackTvId}" title="${title}">${title}</a>
+          <a class="title-link" data-video-index="${index}" title="${title}">${title}</a>
           <kbd>${link_flair_text}</kbd>
         </div>
       </div>
