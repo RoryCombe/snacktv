@@ -1,3 +1,9 @@
+export const log = (...args: Array<any>) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[STV]', ...args);
+  }
+};
+
 export const htmlDecode = (input: string) => {
   var doc = new DOMParser().parseFromString(input, 'text/html');
   return doc.documentElement.textContent || '';

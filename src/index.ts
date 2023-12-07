@@ -1,6 +1,8 @@
-import { chunk } from './utils';
+import { chunk, log } from './utils';
 import './components/video-row';
 import './components/time-select';
+
+log(process.env.NODE_ENV);
 
 let currentCategory: STV.Category = 'hot';
 const cache = new Map<string, { videos: Array<STV.Video>; flair: Set<string> }>();
@@ -65,10 +67,10 @@ const loadVideosAndFlair = async ({
   const cacheKey = generateCacheKey(category, timeframe);
   const cached = cache.get(cacheKey);
   if (cached) {
-    console.log('Setting videos from cache for category', cacheKey);
+    log('Setting videos from cache for category', cacheKey);
     return cached;
   } else {
-    console.log('Fetching videos for category', category, timeframe);
+    log('Fetching videos for category', category, timeframe);
     const videos = await fetchVideos(category, timeframe);
     const flair = generateFlair(videos);
     cache.set(cacheKey, { videos, flair });
@@ -164,8 +166,8 @@ const initialise = async ({
 }) => {
   const data = await loadVideosAndFlair({ category, timeframe });
   const videos = selectedFlair ? data.videos.filter(flairFilter(selectedFlair)) : data.videos;
-  console.log('Initialised');
-  console.log('Cache', cache);
+  log('Initialised');
+  log('Cache', cache);
 
   document.querySelector<TimeSelect>('stv-time-select')?.setFlair(data.flair);
 
@@ -178,10 +180,10 @@ const initialise = async ({
   }
 
   if (prewarm) {
-    console.log('Pre-warming cache');
+    log('Pre-warming cache');
     await preWarmCache();
-    console.log('Warmed');
-    console.log('Cache', cache);
+    log('Warmed');
+    log('Cache', cache);
   }
 };
 
