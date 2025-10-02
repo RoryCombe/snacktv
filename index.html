@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google-adsense-account" content="ca-pub-6751378697808343" />
+  <title>Snack TV</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📺</text></svg>" />
+  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="tv_120.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="152x152" href="tv_152.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="167x167" href="tv_167.png" />
+  <link rel="apple-touch-icon-precomposed" sizes="180x180" href="tv_180.png" />
+  <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css" />
+  <link rel="stylesheet" href="src/index.css" />
+</head>
+
+<body>
+  <!-- Main nav -->
+  <nav>
+    <ul>
+      <li><a href="/top" class="contrast">📺 <strong>Snack TV</strong></a></li>
+    </ul>
+    <ul>
+      <li><a href="/top">Top</a></li>
+      <li><a href="/hot">Hot</a></li>
+      <li><a href="/new">New</a></li>
+      <li><a href="/rising">Rising</a></li>
+    </ul>
+  </nav>
+  <!-- Subnav -->
+  <nav id="subnav">
+    <ul>
+      <li>
+        <select name="timeframe" aria-label="Timeframe">
+          <option disabled value="">Timeframe</option>
+          <option value="hour">Hour</option>
+          <option value="day">Day</option>
+          <option value="week">Week</option>
+          <option value="month">Month</option>
+          <option value="year">Year</option>
+          <option value="all">All</option>
+        </select>
+      </li>
+      <li>
+        <select name="length" aria-label="Length">
+          <option disabled value="">Length</option>
+          <option value="5-7">5 - 7 Minutes</option>
+          <option value="7-10">7 - 10 Minutes</option>
+          <option value="10-15">10 - 15 Minutes</option>
+          <option value="15-30">15 - 30 Minutes</option>
+          <option value="30">30 Minutes Plus</option>
+        </select>
+      </li>
+    </ul>
+  </nav>
+  <script>
+    const addParam = (key, value) => {
+      const url = new URL(location.href);
+      url.searchParams.set(key, value);
+      location.href = url.href;
+    };
+
+    const category = location.pathname.split('/')[1];
+
+    if (category !== 'top') {
+      const timeframeSelect = document.querySelector('select[name="timeframe"]');
+      timeframeSelect.hidden = true;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchParams = new URLSearchParams(location.search);
+      const lengthSelect = document.querySelector('select[name="length"]');
+      const timeframeSelect = document.querySelector('select[name="timeframe"]');
+
+      if (lengthSelect) {
+        lengthSelect.value = searchParams.get('length') ?? '';
+        lengthSelect.addEventListener('change', () => {
+          addParam('length', lengthSelect.value);
+        });
+      }
+
+      if (timeframeSelect) {
+        timeframeSelect.value = searchParams.get('timeframe') ?? '';
+        timeframeSelect.addEventListener('change', () => {
+          addParam('timeframe', timeframeSelect.value);
+        });
+      }
+    });
+  </script>
+  <main></main>
+  <script type="module" src="src/index.ts"></script>
+</body>
+
+</html>

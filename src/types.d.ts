@@ -1,7 +1,8 @@
 declare namespace STV {
   export type Category = 'top' | 'new' | 'hot' | 'rising' | '';
-  export type Timeframe = 'hour' | 'day' | 'week' | 'month' | 'year' | 'all' | '';
-  export type Video = MTV & { snackTvId: number };
+  export type Timeframe = 'hour' | 'day' | 'week' | 'month' | 'year' | 'all';
+  export type Length = '5-7' | '7-10' | '10-15' | '15-30' | '30';
+  export type Video = { id: number; media: Oembed2; length: string };
 
   export interface LinkFlairRichtext {
     e: string;

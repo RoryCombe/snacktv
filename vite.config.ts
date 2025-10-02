@@ -2,7 +2,6 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: 'src',
   server: {
     port: 3000,
   },
@@ -11,8 +10,7 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: resolve('src/index.html'),
-        privacy: resolve('src/privacy.html'),
+        main: resolve('index.html'),
       },
     },
   },
