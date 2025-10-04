@@ -8,6 +8,23 @@ customElements.define('snack-tv-videos', SnackTvVideos);
 
 log(process.env.NODE_ENV);
 
+const setTheme = (theme: 'light' | 'dark') => {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+};
+
+setTheme((localStorage.getItem('theme') as 'light' | 'dark') || 'light');
+
+const listenThemeChange = () => {
+  const themeToggle = document.getElementById('theme-toggle') as HTMLInputElement;
+  themeToggle.addEventListener('change', (event) => {
+    const theme = (event.target as HTMLInputElement).checked ? 'dark' : 'light';
+    setTheme(theme);
+  });
+};
+
+listenThemeChange();
+
 async function main() {
   const paths = window.location.pathname.split('/');
   const searchParams = new URLSearchParams(window.location.search);

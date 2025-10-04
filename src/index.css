@@ -20,3 +20,28 @@ snack-tv-video iframe {
   width: 100%;
   min-height: 800px;
 }
+
+.video-container {
+  border-radius: 10px;
+  overflow: hidden;
+  height: 290px;
+  background-color: var(--pico-color-grey-50);
+}
+
+.video-container div {
+  font-size: 0.8rem;
+  padding: 10px;
+}
+
+.video-container img {
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+.video-container div a {
+  text-decoration: none;
+}
+
+[data-theme='dark'] .video-container {
+  background-color: var(--pico-color-grey-800);
+}

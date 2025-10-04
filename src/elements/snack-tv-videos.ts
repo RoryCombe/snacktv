@@ -16,12 +16,19 @@ export class SnackTvVideos extends HTMLElement {
   }
 
   createVideoHtml(video: STV.Video) {
-    const snackTvVideo = document.createElement('article');
-    snackTvVideo.innerHTML = `
+    const videoHtml = document.createElement('div');
+    videoHtml.classList.add('video-container');
+    videoHtml.innerHTML = `
       <img src="${video.media.thumbnail_url}" loading="lazy" />
-      <footer><a href="/${this.category}/${video.id}${location.search}">${video.media.title}</a></footer>
+      <div><a href="/${this.category}/${video.id}${location.search}">${video.media.title}</a></div>
     `;
-    snackTvVideo.dataset.videoId = video.id.toString();
-    return snackTvVideo;
+    return videoHtml;
+    // const snackTvVideo = document.createElement('article');
+    // snackTvVideo.innerHTML = `
+    //   <img src="${video.media.thumbnail_url}" loading="lazy" />
+    //   <footer><a href="/${this.category}/${video.id}${location.search}">${video.media.title}</a></footer>
+    // `;
+    // snackTvVideo.dataset.videoId = video.id.toString();
+    // return snackTvVideo;
   }
 }
